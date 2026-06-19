@@ -1,9 +1,76 @@
-:root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens ported from summe-web/src/global.css. Semantic light + dark
+   palette consumed by tailwind.config.js via var(--color-*). NativeWind uses
+   the `.dark` class strategy (see tailwind.config.js `darkMode`). */
+@layer base {
+  :root {
+    --color-fg-default: #27272a;
+    --color-fg-default-emphasized: #3f3f46;
+    --color-fg-strong: #18181b;
+    --color-fg-strong-emphasized: #27272a;
+    --color-fg-muted: #73736f;
+    --color-fg-muted-emphasized: #525258;
+    --color-fg-inverse: #fafaf9;
+    --color-fg-inverse-emphasized: #f4f4f2;
+
+    --color-bg-base: #fafaf9;
+    --color-bg-base-emphasized: #f4f4f2;
+    --color-bg-subtle: #f4f4f2;
+    --color-bg-subtle-emphasized: #ececea;
+    --color-bg-raised: #ffffff;
+    --color-bg-raised-emphasized: #f4f4f2;
+
+    --color-border-subtle: #ececea;
+    --color-border-subtle-emphasized: #d4d4d2;
+    --color-border-default: #d4d4d2;
+    --color-border-default-emphasized: #a3a3a1;
+    --color-border-strong: #a3a3a1;
+    --color-border-strong-emphasized: #73736f;
+
+    --color-positive-fg: #15803d;
+    --color-positive-fg-emphasized: #166534;
+    --color-positive-bg: #f0fdf4;
+    --color-positive-bg-emphasized: #dcfce7;
+    --color-negative-fg: #b91c1c;
+    --color-negative-fg-emphasized: #991b1b;
+    --color-negative-bg: #fef2f2;
+    --color-negative-bg-emphasized: #fee2e2;
+  }
+
+  .dark:root {
+    --color-fg-default: #e4e4e7;
+    --color-fg-default-emphasized: #d4d4d8;
+    --color-fg-strong: #fafafa;
+    --color-fg-strong-emphasized: #e4e4e7;
+    --color-fg-muted: #8a8a8f;
+    --color-fg-muted-emphasized: #a1a1aa;
+    --color-fg-inverse: #0c0c0d;
+    --color-fg-inverse-emphasized: #161618;
+
+    --color-bg-base: #0c0c0d;
+    --color-bg-base-emphasized: #161618;
+    --color-bg-subtle: #161618;
+    --color-bg-subtle-emphasized: #1f1f22;
+    --color-bg-raised: #1c1c1f;
+    --color-bg-raised-emphasized: #26262a;
+
+    --color-border-subtle: #26262a;
+    --color-border-subtle-emphasized: #36363b;
+    --color-border-default: #36363b;
+    --color-border-default-emphasized: #525258;
+    --color-border-strong: #525258;
+    --color-border-strong-emphasized: #8a8a8f;
+
+    --color-positive-fg: #4ade80;
+    --color-positive-fg-emphasized: #22c55e;
+    --color-positive-bg: #14532d;
+    --color-positive-bg-emphasized: #166534;
+    --color-negative-fg: #f87171;
+    --color-negative-fg-emphasized: #ef4444;
+    --color-negative-bg: #7f1d1d;
+    --color-negative-bg-emphasized: #991b1b;
+  }
 }
