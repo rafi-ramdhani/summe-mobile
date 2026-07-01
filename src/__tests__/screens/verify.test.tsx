@@ -58,6 +58,17 @@ test("verifies the code, stores the token, and routes to setup-profile", async (
   await waitFor(() => expect(mockReplace).toHaveBeenCalledWith("/setup-profile"));
 });
 
+test("shows the length validation message while the code is incomplete, then clears it at 6", async () => {
+  const { getByPlaceholderText, getByText, queryByText } = await renderScreen();
+  const input = getByPlaceholderText("123456");
+
+  await fireEvent.changeText(input, "123");
+  expect(getByText("Code must be exactly 6 characters")).toBeTruthy();
+
+  await fireEvent.changeText(input, "123456");
+  expect(queryByText("Code must be exactly 6 characters")).toBeNull();
+});
+
 test("shows Missing email fallback and a way back to login when email param is absent", async () => {
   mockUseLocalSearchParams.mockReturnValue({});
   const { getByText } = await renderScreen();

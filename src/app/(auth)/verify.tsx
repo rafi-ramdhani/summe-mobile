@@ -18,6 +18,7 @@ export default function VerifyScreen() {
   const { email } = useLocalSearchParams<{ email?: string }>();
   const { normalizeError } = useAppError();
   const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState<string | undefined>(undefined);
   const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "error">(
     "idle",
   );
@@ -121,7 +122,15 @@ export default function VerifyScreen() {
                   locale === "en" ? "Verification Code" : "Kode Verifikasi"
                 }
                 value={code}
-                onChangeText={setCode}
+                onChangeText={(value) => {
+                  setCode(value);
+                  setCodeError(
+                    value.length !== 6
+                      ? "Code must be exactly 6 characters"
+                      : undefined,
+                  );
+                }}
+                error={codeError}
                 placeholder="123456"
                 keyboardType="number-pad"
                 textContentType="oneTimeCode"
