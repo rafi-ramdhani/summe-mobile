@@ -1,6 +1,9 @@
 jest.mock("@/lib/i18n", () => ({
   useLocale: () => "en",
 }));
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ back: jest.fn(), push: jest.fn(), replace: jest.fn() }),
+}));
 
 import { render } from "@testing-library/react-native";
 import { GroupListItem } from "@/components/dashboard/GroupListItem";

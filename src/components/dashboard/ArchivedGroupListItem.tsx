@@ -1,9 +1,9 @@
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import Text from "@/components/Text";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/lib/i18n";
 import { formatRelativeTime, formatMemberName } from "@/lib/format";
-import { comingSoon } from "@/lib/comingSoon";
 import { useAuthStore } from "@/stores/authStore";
 import type { Group } from "@/lib/queries";
 
@@ -15,6 +15,7 @@ export function ArchivedGroupListItem({
   isFirst: boolean;
 }) {
   const locale = useLocale();
+  const router = useRouter();
   const user = useAuthStore((s) => s.session?.user);
 
   const archivedByStr =
@@ -26,10 +27,14 @@ export function ArchivedGroupListItem({
         )
       : null;
 
-  // TODO(next-pass): navigate to /groups/[groupId] when group detail exists.
   return (
     <Pressable
-      onPress={() => comingSoon(locale)}
+      onPress={() =>
+        router.push({
+          pathname: "/(app)/groups/[groupId]",
+          params: { groupId: group.id },
+        })
+      }
       className={cn(
         "py-4 flex-col",
         !isFirst && "border-t border-border-subtle border-dashed",

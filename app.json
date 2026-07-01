@@ -36,7 +36,14 @@
         }
       ],
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Summe to access your photos to scan receipts.",
+          "cameraPermission": "Allow Summe to use the camera to scan receipts."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,9 +1,9 @@
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import Text from "@/components/Text";
 import { cn } from "@/lib/cn";
 import { useLocale } from "@/lib/i18n";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
-import { comingSoon } from "@/lib/comingSoon";
 import { ActionIndicator } from "@/components/ActionIndicator";
 import type { Group } from "@/lib/queries";
 
@@ -15,14 +15,19 @@ export function GroupListItem({
   isFirst: boolean;
 }) {
   const locale = useLocale();
+  const router = useRouter();
   const balance = Number(group.balance);
   const isZero = Math.abs(balance) < 0.01;
   const sign = isZero ? "" : balance > 0 ? "+" : "-";
 
-  // TODO(next-pass): navigate to /groups/[groupId] when group detail exists.
   return (
     <Pressable
-      onPress={() => comingSoon(locale)}
+      onPress={() =>
+        router.push({
+          pathname: "/(app)/groups/[groupId]",
+          params: { groupId: group.id },
+        })
+      }
       className={cn(
         "py-4 flex-row items-center justify-between",
         !isFirst && "border-t border-border-subtle border-dashed",
