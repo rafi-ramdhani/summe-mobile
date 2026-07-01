@@ -345,7 +345,7 @@ export default function SettlementsScreen() {
         {settlement.status === "rejected" && settlement.rejectionReason && (
           <View className="border-l-2 border-border-default pl-2">
             <Text className="text-sm text-fg-muted italic">
-              "{settlement.rejectionReason}"
+              {`"${settlement.rejectionReason}"`}
             </Text>
           </View>
         )}

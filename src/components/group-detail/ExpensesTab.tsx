@@ -1,4 +1,5 @@
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import Text from "@/components/Text";
 import { cn } from "@/lib/cn";
 import {
@@ -6,7 +7,6 @@ import {
   formatRelativeTime,
   formatMemberName,
 } from "@/lib/format";
-import { comingSoon } from "@/lib/comingSoon";
 import type { Locale } from "@/lib/i18n";
 import type { GroupDetail } from "@/lib/queries";
 
@@ -19,6 +19,7 @@ export function ExpensesTab({
   group: GroupDetail;
   userId?: string;
 }) {
+  const router = useRouter();
   return (
     <View className="flex-col">
       {group.expenses.length === 0 ? (
@@ -59,8 +60,12 @@ export function ExpensesTab({
             return (
               <Pressable
                 key={expense.id}
-                // TODO(next-pass): navigate to the expense detail screen once ported.
-                onPress={() => comingSoon(locale)}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(app)/groups/[groupId]/expenses/[expenseId]",
+                    params: { groupId: group.id, expenseId: expense.id },
+                  })
+                }
                 className={cn(
                   "flex-row justify-between py-4 items-center active:bg-bg-subtle",
                   index > 0 && "border-t border-border-subtle",

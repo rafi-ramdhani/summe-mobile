@@ -123,13 +123,13 @@ function ActivityMessage({
       message =
         locale === "en" ? (
           <>
-            {emphasize(actorName)} added the expense "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} added the expense {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         ) : (
           <>
-            {emphasize(actorName)} menambahkan pengeluaran "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} menambahkan pengeluaran {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         );
       break;
@@ -137,13 +137,13 @@ function ActivityMessage({
       message =
         locale === "en" ? (
           <>
-            {emphasize(actorName)} updated the expense "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} updated the expense {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         ) : (
           <>
-            {emphasize(actorName)} memperbarui pengeluaran "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} memperbarui pengeluaran {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         );
       break;
@@ -151,13 +151,13 @@ function ActivityMessage({
       message =
         locale === "en" ? (
           <>
-            {emphasize(actorName)} deleted the expense "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} deleted the expense {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         ) : (
           <>
-            {emphasize(actorName)} menghapus pengeluaran "
-            {emphasize(activity.data.name)}".
+            {emphasize(actorName)} menghapus pengeluaran {'"'}
+            {emphasize(activity.data.name)}{'".'}
           </>
         );
       break;

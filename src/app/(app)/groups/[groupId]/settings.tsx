@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect -- hydrate form state from the fetched group, mirroring summe-web */
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Feather } from "@expo/vector-icons";

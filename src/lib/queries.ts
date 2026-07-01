@@ -449,6 +449,142 @@ export function useLeaveGroup(groupId: string) {
   });
 }
 
+type ExpenseItemPayload = {
+  name: string;
+  amount: string;
+  quantity: number;
+  splitKind: "equal" | "shares" | "percent" | "exact";
+  assignments: { assigneeId: string; value: string }[];
+};
+
+export function useCreateExpense(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      data,
+      idempotencyKey,
+    }: {
+      data: {
+        name: string;
+        paidBy: string;
+        discountAmount?: string;
+        taxAmount?: string;
+        serviceChargeAmount?: string;
+        tipAmount?: string;
+        items?: ExpenseItemPayload[];
+      };
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<{ id: string; name: string }>>(
+        `/groups/${groupId}/expenses`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useUpdateExpense(groupId: string, expenseId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      data,
+      idempotencyKey,
+    }: {
+      data: {
+        name?: string;
+        paidBy?: string;
+        discountAmount?: string;
+        taxAmount?: string;
+        serviceChargeAmount?: string;
+        tipAmount?: string;
+        items?: ExpenseItemPayload[];
+      };
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<{ id: string; name: string }>>(
+        `/groups/${groupId}/expenses/${expenseId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(data),
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+      qc.invalidateQueries({
+        queryKey: ["groups", groupId, "expenses", expenseId],
+      });
+    },
+  });
+}
+
+export function useDeleteExpense(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      expenseId,
+      idempotencyKey,
+    }: {
+      expenseId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<{ id: string }>>(
+        `/groups/${groupId}/expenses/${expenseId}`,
+        {
+          method: "DELETE",
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export type ReceiptDraft = {
+  name: string;
+  taxAmount: string;
+  serviceChargeAmount: string;
+  discountAmount: string;
+  tipAmount: string;
+  items: { name: string; amount: string; quantity: number }[];
+};
+
+export type ReceiptImage = { uri: string; name: string; type: string };
+
+export function useScanReceipt(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    // ReceiptScanArea shows a dedicated modal for a non-receipt image, so keep
+    // the global error toast from also firing for that code.
+    meta: { suppressErrorToastCodes: ["NOT_A_RECEIPT"] },
+    mutationFn: async (image: ReceiptImage) => {
+      const form = new FormData();
+      // RN FormData takes a { uri, name, type } descriptor for files.
+      form.append("image", image as unknown as Blob);
+      const res = await apiFetch<AppResponse<ReceiptDraft>>(
+        `/groups/${groupId}/expenses/scan`,
+        { method: "POST", body: form },
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      // A successful scan consumes one of the daily allowance, so refresh
+      // the remaining-scans status.
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "scan-status"] });
+    },
+  });
+}
+
 export function useCreateSettlement(groupId: string) {
   const qc = useQueryClient();
   return useMutation({

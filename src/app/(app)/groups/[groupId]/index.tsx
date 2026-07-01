@@ -18,7 +18,6 @@ import { BalancesTab } from "@/components/group-detail/BalancesTab";
 import { MembersTab } from "@/components/group-detail/MembersTab";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/cn";
-import { comingSoon } from "@/lib/comingSoon";
 import { formatRelativeTime, formatMemberName } from "@/lib/format";
 import { isActionable, managedMemberHasActivity } from "@/lib/groups";
 import { generateUUID, ApiError } from "@/lib/api";
@@ -454,8 +453,12 @@ export default function GroupDetailScreen() {
               <Button
                 variant="primary"
                 disabled={isFetching}
-                // TODO(next-pass): navigate to the create-expense screen once ported.
-                onPress={() => comingSoon(locale)}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(app)/groups/[groupId]/expenses/[expenseId]",
+                    params: { groupId, expenseId: "create" },
+                  })
+                }
               >
                 {locale === "en" ? "Add expense" : "Tambah pengeluaran"}
               </Button>
