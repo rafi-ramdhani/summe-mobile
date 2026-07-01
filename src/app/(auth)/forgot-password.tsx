@@ -82,6 +82,8 @@ export default function ForgotPasswordScreen() {
                         value={field.state.value}
                         onChangeText={(value) => field.handleChange(value)}
                         error={errorMessage}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
                       />
                     );
                   }}
