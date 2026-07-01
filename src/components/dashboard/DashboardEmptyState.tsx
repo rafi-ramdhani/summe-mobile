@@ -1,8 +1,10 @@
 import { View } from "react-native";
+import { CopilotStep } from "react-native-copilot";
 import Text from "@/components/Text";
 import Button from "@/components/Button";
 import { useLocale } from "@/lib/i18n";
 import { comingSoon } from "@/lib/comingSoon";
+import { WalkthroughView } from "@/components/tour/OnboardingTour";
 
 export function DashboardEmptyState({
   hasInvitations,
@@ -30,9 +32,21 @@ export function DashboardEmptyState({
               : "Terima undangan di atas, atau buat grup Anda sendiri."}
         </Text>
         <View className="w-full">
-          <Button onPress={() => comingSoon(locale)}>
-            {locale === "en" ? "Create a group" : "Buat grup"}
-          </Button>
+          <CopilotStep
+            name="create-group"
+            order={1}
+            text={
+              locale === "en"
+                ? "Start here. A group holds your shared expenses."
+                : "Mulai di sini. Grup menyimpan pengeluaran bersamamu."
+            }
+          >
+            <WalkthroughView>
+              <Button onPress={() => comingSoon(locale)}>
+                {locale === "en" ? "Create a group" : "Buat grup"}
+              </Button>
+            </WalkthroughView>
+          </CopilotStep>
         </View>
       </View>
     </View>
