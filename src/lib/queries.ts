@@ -180,3 +180,29 @@ export function useUpdateOnboarding() {
     },
   });
 }
+
+export function useCurrencies() {
+  return useQuery({
+    queryKey: ["currencies"],
+    queryFn: () => apiFetch<AppResponse<Currency[]>>("/currencies"),
+  });
+}
+
+export function useCreateGroup() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      data,
+      idempotencyKey,
+    }: {
+      data: { name: string; currency: string };
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<Group>>("/groups", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["groups"] }),
+  });
+}

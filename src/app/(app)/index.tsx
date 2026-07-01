@@ -13,6 +13,7 @@ import {
   type Group,
 } from "@/lib/queries";
 import { isChecklistVisible } from "@/lib/onboarding";
+import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import { DashboardSearch } from "@/components/dashboard/DashboardSearch";
@@ -167,6 +168,7 @@ function DashboardContent() {
   return (
     <SafeAreaView className="flex-1 bg-bg-base" edges={["top"]}>
       <View className="flex-1 px-4 pt-8">
+        <DashboardTopBar />
         {hasInvitations && <DashboardInvitations invitations={invitations} />}
 
         {onboarding && isChecklistVisible(onboarding) && (
