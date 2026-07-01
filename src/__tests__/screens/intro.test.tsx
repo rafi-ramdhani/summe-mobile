@@ -16,7 +16,7 @@ import { AccessibilityInfo } from "react-native";
 import { cleanup, fireEvent, waitFor } from "@testing-library/react-native";
 import { renderWithClient } from "@/lib/test-utils";
 import IntroScreen from "@/app/(auth)/intro";
-import { getSlides } from "@/app/(auth)/-intro/slides";
+import { getSlides } from "@/components/intro/slides";
 
 // Force reduced-motion so the 5s auto-advance interval never runs — keeps the
 // story deterministic and free of timer-driven act() noise.

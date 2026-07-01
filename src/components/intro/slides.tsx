@@ -1,6 +1,8 @@
 // summe-mobile port of summe-web/src/routes/{-$locale}/_unauthenticated/-intro/slides.tsx
-// The `-intro/` prefix colocates these helpers next to the intro route. Copy is
-// authoritative — every headline/subtext/mockup data string matches web verbatim.
+// Lives under src/components/ (NOT src/app/): expo-router treats every file in
+// app/ as a route and does not honor the `-` exclusion prefix that summe-web's
+// TanStack Router uses. Copy is authoritative — every headline/subtext/mockup
+// data string matches web verbatim.
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";

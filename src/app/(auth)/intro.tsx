@@ -2,7 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useLocale } from "@/lib/i18n";
 import { markIntroSeen } from "@/lib/intro";
-import IntroStory from "./-intro/IntroStory";
+import IntroStory from "@/components/intro/IntroStory";
 
 export default function Intro() {
   const locale = useLocale();
