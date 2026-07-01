@@ -24,6 +24,7 @@ module.exports = {
         "bg-raised": "var(--color-bg-raised)",
         "bg-raised-emphasized": "var(--color-bg-raised-emphasized)",
 
+        border: "var(--color-border-default)",
         "border-subtle": "var(--color-border-subtle)",
         "border-subtle-emphasized": "var(--color-border-subtle-emphasized)",
         "border-default": "var(--color-border-default)",
