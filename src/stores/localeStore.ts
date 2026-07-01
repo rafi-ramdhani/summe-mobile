@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { STORAGE_KEYS } from "@/lib/config";
-import { DEFAULT_LOCALE, isValidLocale, type Locale } from "@/lib/i18n";
+import { DEFAULT_LOCALE, isValidLocale, type Locale } from "@/lib/locale";
 
 type LocaleState = {
   locale: Locale;

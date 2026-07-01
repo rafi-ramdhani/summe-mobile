@@ -1,11 +1,9 @@
 import { useLocaleStore } from "@/stores/localeStore";
+import type { Locale } from "@/lib/locale";
 
-export type Locale = "id" | "en";
-export const VALID_LOCALES: Locale[] = ["id", "en"];
-export const DEFAULT_LOCALE: Locale = "en";
-export function isValidLocale(value: unknown): value is Locale {
-  return typeof value === "string" && VALID_LOCALES.includes(value as Locale);
-}
+export type { Locale } from "@/lib/locale";
+export { VALID_LOCALES, DEFAULT_LOCALE, isValidLocale } from "@/lib/locale";
+
 export function useLocale(): Locale {
   return useLocaleStore((s) => s.locale);
 }
