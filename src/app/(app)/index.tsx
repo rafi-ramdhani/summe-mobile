@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CopilotStep } from "react-native-copilot";
 import Text from "@/components/Text";
 import { useLocale } from "@/lib/i18n";
 import { useDebounce } from "@/lib/useDebounce";
@@ -22,6 +23,11 @@ import { GroupListItem } from "@/components/dashboard/GroupListItem";
 import { ArchivedGroupListItem } from "@/components/dashboard/ArchivedGroupListItem";
 import { GroupListSkeleton } from "@/components/GroupListSkeleton";
 import type { SortBy } from "@/components/dashboard/SortSheet";
+import {
+  OnboardingTour,
+  useTourControls,
+  WalkthroughView,
+} from "@/components/tour/OnboardingTour";
 
 type Status = "active" | "archived";
 
@@ -124,8 +130,9 @@ function GroupsPane({
   );
 }
 
-export default function AppHome() {
+function DashboardContent() {
   const locale = useLocale();
+  const tour = useTourControls();
   const pagerRef = useRef<PagerView>(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [sortActive, setSortActive] = useState<SortBy>("recent-activity");
@@ -163,10 +170,22 @@ export default function AppHome() {
         {hasInvitations && <DashboardInvitations invitations={invitations} />}
 
         {onboarding && isChecklistVisible(onboarding) && (
-          <GettingStartedChecklist
-            onboarding={onboarding}
-            onReplayTour={() => {}}
-          />
+          <CopilotStep
+            name="checklist"
+            order={2}
+            text={
+              locale === "en"
+                ? "Track getting-started tasks here anytime."
+                : "Pantau tugas awalmu di sini kapan saja."
+            }
+          >
+            <WalkthroughView>
+              <GettingStartedChecklist
+                onboarding={onboarding}
+                onReplayTour={() => tour.start({ manual: true })}
+              />
+            </WalkthroughView>
+          </CopilotStep>
         )}
 
         {showEmptyState ? (
@@ -214,5 +233,13 @@ export default function AppHome() {
         )}
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function AppHome() {
+  return (
+    <OnboardingTour>
+      <DashboardContent />
+    </OnboardingTour>
   );
 }
