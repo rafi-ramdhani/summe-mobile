@@ -449,6 +449,132 @@ export function useLeaveGroup(groupId: string) {
   });
 }
 
+export function useCreateSettlement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      idempotencyKey,
+      payeeId,
+      amount,
+      payerId,
+    }: {
+      idempotencyKey: string;
+      payeeId: string;
+      amount: string | number;
+      payerId?: string;
+    }) =>
+      apiFetch<AppResponse<{ id: string }>>(`/groups/${groupId}/settlements`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: JSON.stringify({
+          payeeId,
+          amount: amount.toString(),
+          ...(payerId ? { payerId } : {}),
+        }),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useDeleteSettlement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      settlementId,
+      idempotencyKey,
+    }: {
+      settlementId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<{ id: string }>>(
+        `/groups/${groupId}/settlements/${settlementId}`,
+        {
+          method: "DELETE",
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useConfirmSettlement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      settlementId,
+      idempotencyKey,
+    }: {
+      settlementId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/settlements/${settlementId}/confirm`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "settlements"] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useRejectSettlement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      settlementId,
+      reason,
+      idempotencyKey,
+    }: {
+      settlementId: string;
+      reason?: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/settlements/${settlementId}/reject`, {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason }),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "settlements"] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useRevertSettlement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      settlementId,
+      idempotencyKey,
+    }: {
+      settlementId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/settlements/${settlementId}/revert`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "settlements"] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
 export function useCreateManagedMember(groupId: string) {
   const qc = useQueryClient();
   return useMutation({

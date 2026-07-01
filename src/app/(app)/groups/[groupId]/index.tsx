@@ -475,8 +475,12 @@ export default function GroupDetailScreen() {
                 <Button
                   variant="primary"
                   disabled={hasNothingToSettle}
-                  // TODO(next-pass): navigate to the settle-up screen once ported.
-                  onPress={() => comingSoon(locale)}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(app)/groups/[groupId]/settle",
+                      params: { groupId },
+                    })
+                  }
                 >
                   {locale === "en" ? "Settle up" : "Lunasi"}
                 </Button>

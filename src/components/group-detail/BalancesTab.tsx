@@ -1,10 +1,10 @@
 import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
 import Text from "@/components/Text";
 import { ActionIndicator } from "@/components/ActionIndicator";
 import { cn } from "@/lib/cn";
 import { formatCurrency, formatMemberName } from "@/lib/format";
 import { isActionable } from "@/lib/groups";
-import { comingSoon } from "@/lib/comingSoon";
 import type { Locale } from "@/lib/i18n";
 import type { GroupDetail } from "@/lib/queries";
 
@@ -17,6 +17,7 @@ export function BalancesTab({
   group: GroupDetail;
   userId?: string;
 }) {
+  const router = useRouter();
   const ownerId = group.members.find((m) => m.role === "owner")?.id;
   const pendingActionCount =
     group.settlements?.filter((s) =>
@@ -30,8 +31,12 @@ export function BalancesTab({
           {locale === "en" ? "Net Balance" : "Saldo Bersih"}
         </Text>
         <Pressable
-          // TODO(next-pass): navigate to the settlements screen once ported.
-          onPress={() => comingSoon(locale)}
+          onPress={() =>
+            router.push({
+              pathname: "/(app)/groups/[groupId]/settlements",
+              params: { groupId: group.id },
+            })
+          }
           className="flex-row items-center gap-1.5"
         >
           <Text className="text-[12px] font-grotesk-medium text-fg-default underline">
@@ -85,8 +90,12 @@ export function BalancesTab({
                   </Text>
                   {showSettleLink && (
                     <Pressable
-                      // TODO(next-pass): navigate to settle-for-them once ported.
-                      onPress={() => comingSoon(locale)}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/(app)/groups/[groupId]/settle",
+                          params: { groupId: group.id, as: balance.userId },
+                        })
+                      }
                     >
                       <Text className="text-[12px] font-grotesk-medium text-fg-default underline">
                         {locale === "en"
