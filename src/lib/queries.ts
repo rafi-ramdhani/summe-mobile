@@ -249,6 +249,61 @@ export type GroupDetail = Group & {
   }[];
 };
 
+export type Activity = {
+  id: string;
+  groupId: string;
+  userId: string | null;
+  action:
+    | "expense_created"
+    | "expense_updated"
+    | "expense_deleted"
+    | "settlement_created"
+    | "settlement_deleted"
+    | "settlement_confirmed"
+    | "settlement_rejected"
+    | "settlement_reverted"
+    | "member_joined"
+    | "member_removed"
+    | "member_left"
+    | "member_invited"
+    | "invitation_revoked"
+    | "group_archived"
+    | "group_unarchived"
+    | "managed_member_added"
+    | "managed_member_removed"
+    | "managed_member_replaced"
+    | "managed_member_renamed";
+  data: {
+    expenseId?: string;
+    settlementId?: string;
+    memberId?: string;
+    email?: string;
+    name?: string | null;
+    amount?: string;
+    managedMemberId?: string;
+    targetUserId?: string;
+  };
+  createdAt: string;
+};
+
+export function useInfiniteGroupActivities(
+  groupId: string,
+  sort: "asc" | "desc" = "desc",
+) {
+  return useInfiniteQuery({
+    queryKey: ["groups", groupId, "activities", sort],
+    queryFn: ({ pageParam = 1 }) =>
+      apiFetch<PaginatedResponse<Activity[]>>(
+        `/groups/${groupId}/activities?page=${pageParam}&perPage=20&sort=${sort}`,
+      ),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { page, totalPages } = lastPage.meta.pagination;
+      return page < totalPages ? page + 1 : undefined;
+    },
+  });
+}
+
 export function useGroupDetail(groupId: string) {
   return useQuery({
     queryKey: ["groups", groupId],

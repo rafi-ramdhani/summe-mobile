@@ -309,8 +309,12 @@ export default function GroupDetailScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={locale === "en" ? "Activities" : "Aktivitas"}
-              // TODO(next-pass): navigate to the activities screen once ported.
-              onPress={() => comingSoon(locale)}
+              onPress={() =>
+                router.push({
+                  pathname: "/(app)/groups/[groupId]/activities",
+                  params: { groupId },
+                })
+              }
               className="p-2 -mr-2"
             >
               <Feather name="activity" size={20} color={fgMuted[scheme]} />
