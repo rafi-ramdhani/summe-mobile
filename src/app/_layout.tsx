@@ -27,17 +27,24 @@ export default function RootLayout() {
   });
   useEffect(() => {
     (async () => {
-      await loadToken();
-      await Promise.all([
-        useThemeStore.getState().hydrate(),
-        useLocaleStore.getState().hydrate(),
-        useIntroStore.getState().hydrate(),
-      ]);
-      await bootstrapAuth();
-      setReady(true);
+      try {
+        await loadToken();
+        await Promise.all([
+          useThemeStore.getState().hydrate(),
+          useLocaleStore.getState().hydrate(),
+          useIntroStore.getState().hydrate(),
+        ]);
+        await bootstrapAuth();
+      } catch (error) {
+        console.warn("Root bootstrap failed; continuing unauthenticated", error);
+      } finally {
+        setReady(true);
+      }
     })();
   }, []);
-  useEffect(() => { if (ready && fontsLoaded) SplashScreen.hideAsync(); }, [ready, fontsLoaded]);
+  useEffect(() => {
+    if (ready && fontsLoaded) SplashScreen.hideAsync().catch(() => {});
+  }, [ready, fontsLoaded]);
   if (!ready || !fontsLoaded) return null;
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
