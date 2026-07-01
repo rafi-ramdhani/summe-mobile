@@ -55,6 +55,37 @@ test("renders the empty state when there are no groups or invitations", async ()
   await waitFor(() => expect(getByText("No groups yet.")).toBeTruthy());
 });
 
+test("renders the empty state with invitations-aware copy when a pending invitation exists", async () => {
+  const invitation = {
+    id: "inv1",
+    groupId: "g1",
+    name: "Bali Trip",
+    inviterName: "Jane",
+    createdAt: "2026-06-01T00:00:00.000Z",
+    updatedAt: "2026-06-01T00:00:00.000Z",
+  };
+  (apiFetch as jest.Mock).mockImplementation((path: string) => {
+    if (path.startsWith("/groups")) return Promise.resolve(paginated([]));
+    if (path === "/users/me/invitations")
+      return Promise.resolve({ data: [invitation] });
+    if (path === "/users/me/onboarding")
+      return Promise.resolve({
+        data: {
+          tourStatus: "completed",
+          checklistDismissed: true,
+          steps: { createdGroup: null, addedExpense: null, invitedMember: null },
+        },
+      });
+    return Promise.resolve(undefined);
+  });
+  const { getByText } = await renderScreen();
+  await waitFor(() => expect(getByText("No groups yet.")).toBeTruthy());
+  expect(
+    getByText("Accept an invitation above, or create a group of your own."),
+  ).toBeTruthy();
+  expect(getByText("You have 1 pending invitation")).toBeTruthy();
+});
+
 test("renders a group row when active groups exist", async () => {
   const group = {
     id: "g1",

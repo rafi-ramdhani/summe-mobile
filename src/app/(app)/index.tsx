@@ -149,10 +149,7 @@ export default function AppHome() {
   const isLoadingGroups = activeQuery.isLoading || archivedQuery.isLoading;
 
   const showEmptyState =
-    !isLoadingGroups &&
-    totalActive === 0 &&
-    totalArchived === 0 &&
-    !hasInvitations;
+    !isLoadingGroups && totalActive === 0 && totalArchived === 0;
 
   const goToTab = (id: string) => {
     const idx = id === "active" ? 0 : 1;
