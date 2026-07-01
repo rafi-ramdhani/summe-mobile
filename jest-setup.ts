@@ -2,6 +2,7 @@ import "@testing-library/jest-native/extend-expect";
 
 // Mock AsyncStorage for tests
 jest.mock("@react-native-async-storage/async-storage", () => ({
+  __esModule: true,
   default: {
     getItem: jest.fn().mockResolvedValue(null),
     setItem: jest.fn().mockResolvedValue(undefined),
