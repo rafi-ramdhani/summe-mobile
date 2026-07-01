@@ -479,8 +479,12 @@ export default function GroupDetailScreen() {
                 <Button
                   variant="primary"
                   disabled={isFetching}
-                  // TODO(next-pass): navigate to the invite screen once ported.
-                  onPress={() => comingSoon(locale)}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(app)/groups/[groupId]/invite",
+                      params: { groupId },
+                    })
+                  }
                 >
                   {locale === "en" ? "Invite by email" : "Undang via email"}
                 </Button>

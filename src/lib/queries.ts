@@ -278,6 +278,28 @@ export function useRevokeInvitation(groupId: string) {
   });
 }
 
+export function useInviteMember(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      email,
+      idempotencyKey,
+    }: {
+      email: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/invitations`, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
 export function useRemoveMember(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
