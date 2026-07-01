@@ -30,7 +30,7 @@ export default function ResetOtpScreen() {
   }, [countdown]);
 
   const {
-    mutateAsync: verifyOtp,
+    mutate: verifyOtp,
     error: verifyError,
     isPending: isVerifying,
   } = useMutation({
@@ -50,7 +50,7 @@ export default function ResetOtpScreen() {
     },
   });
 
-  const { mutateAsync: resendCode, error: resendError } = useMutation({
+  const { mutate: resendCode, error: resendError } = useMutation({
     mutationFn: async () => {
       if (!email) return;
       setResendStatus("loading");

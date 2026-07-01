@@ -32,7 +32,7 @@ export default function VerifyScreen() {
   }, [countdown]);
 
   const {
-    mutateAsync: verifyEmail,
+    mutate: verifyEmail,
     error: verifyError,
     isPending: isVerifying,
   } = useMutation({
@@ -51,7 +51,7 @@ export default function VerifyScreen() {
     },
   });
 
-  const { mutateAsync: resendCode, error: resendError } = useMutation({
+  const { mutate: resendCode, error: resendError } = useMutation({
     mutationFn: async () => {
       if (!email) return;
       setResendStatus("loading");
