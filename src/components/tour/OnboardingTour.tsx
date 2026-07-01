@@ -16,11 +16,16 @@ const overlay = { light: "rgba(0,0,0,0.6)", dark: "rgba(0,0,0,0.7)" } as const;
 // Bridges copilot's imperative controls to onboarding status. Rendered inside
 // CopilotProvider so useCopilot() is available.
 function TourController({ manualRef }: { manualRef: React.MutableRefObject<boolean> }) {
-  const { start, copilotEvents } = useCopilot();
+  const { start, copilotEvents, isLastStep } = useCopilot();
   const { data } = useOnboarding();
   const update = useUpdateOnboarding();
   const autoStartedRef = useRef(false);
   const reachedStopRef = useRef(false);
+  const reachedLastRef = useRef(false);
+
+  useEffect(() => {
+    if (isLastStep) reachedLastRef.current = true;
+  }, [isLastStep]);
 
   useEffect(() => {
     const onStop = () => {
@@ -29,7 +34,9 @@ function TourController({ manualRef }: { manualRef: React.MutableRefObject<boole
         manualRef.current = false;
         return; // replay must not rewrite status
       }
-      update.mutate({ tourStatus: "completed" });
+      update.mutate({
+        tourStatus: reachedLastRef.current ? "completed" : "skipped",
+      });
     };
     copilotEvents.on("stop", onStop);
     return () => copilotEvents.off("stop", onStop);
@@ -39,6 +46,7 @@ function TourController({ manualRef }: { manualRef: React.MutableRefObject<boole
     if (autoStartedRef.current) return;
     if (!shouldAutoStartTour(data?.data)) return;
     autoStartedRef.current = true;
+    reachedLastRef.current = false;
     start();
   }, [data, start]);
 
@@ -46,6 +54,7 @@ function TourController({ manualRef }: { manualRef: React.MutableRefObject<boole
   useEffect(() => {
     tourStartRef.current = (opts?: { manual?: boolean }) => {
       manualRef.current = opts?.manual ?? false;
+      reachedLastRef.current = false;
       start();
     };
     return () => {
