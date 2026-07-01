@@ -5,6 +5,7 @@ jest.mock("@/lib/secureToken", () => ({
 jest.mock("@react-native-async-storage/async-storage", () => ({
   getItem: jest.fn(() => Promise.resolve(null)), setItem: jest.fn(), removeItem: jest.fn(),
 }));
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiFetch } from "@/lib/api";
 import { getToken } from "@/lib/secureToken";
 import { bootstrapAuth } from "@/lib/auth";
@@ -21,4 +22,24 @@ test("token → fetch me and set session", async () => {
   (apiFetch as jest.Mock).mockResolvedValue({ data: { id: "1", email: "a@b.c" } });
   await bootstrapAuth();
   expect(useAuthStore.getState().session?.user.email).toBe("a@b.c");
+});
+
+test("token → fetch fails + was previously logged in → sessionExpired true, session null", async () => {
+  useAuthStore.getState().setSessionExpired(false);
+  (getToken as jest.Mock).mockReturnValue("tok");
+  (apiFetch as jest.Mock).mockRejectedValue(new Error("network down"));
+  (AsyncStorage.getItem as jest.Mock).mockResolvedValue("true");
+  await bootstrapAuth();
+  expect(useAuthStore.getState().session).toBeNull();
+  expect(useAuthStore.getState().sessionExpired).toBe(true);
+});
+
+test("token → fetch fails + never logged in before → sessionExpired stays false, session null", async () => {
+  useAuthStore.getState().setSessionExpired(false);
+  (getToken as jest.Mock).mockReturnValue("tok");
+  (apiFetch as jest.Mock).mockRejectedValue(new Error("network down"));
+  (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+  await bootstrapAuth();
+  expect(useAuthStore.getState().session).toBeNull();
+  expect(useAuthStore.getState().sessionExpired).toBe(false);
 });
