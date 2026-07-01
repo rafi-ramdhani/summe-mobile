@@ -559,18 +559,19 @@ export type ReceiptDraft = {
   items: { name: string; amount: string; quantity: number }[];
 };
 
-export type ReceiptImage = { uri: string; name: string; type: string };
-
 export function useScanReceipt(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
     // ReceiptScanArea shows a dedicated modal for a non-receipt image, so keep
     // the global error toast from also firing for that code.
     meta: { suppressErrorToastCodes: ["NOT_A_RECEIPT"] },
-    mutationFn: async (image: ReceiptImage) => {
+    // The Blob is an expo-file-system File. SDK 56's global fetch is Expo's
+    // WinterCG fetch, whose FormData only accepts strings/Blob-likes; React
+    // Native's { uri, name, type } descriptor throws
+    // "Unsupported FormDataPart implementation".
+    mutationFn: async (image: Blob) => {
       const form = new FormData();
-      // RN FormData takes a { uri, name, type } descriptor for files.
-      form.append("image", image as unknown as Blob);
+      form.append("image", image);
       const res = await apiFetch<AppResponse<ReceiptDraft>>(
         `/groups/${groupId}/expenses/scan`,
         { method: "POST", body: form },

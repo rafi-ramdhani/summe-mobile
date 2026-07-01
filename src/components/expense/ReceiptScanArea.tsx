@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
+import { File } from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
@@ -41,11 +42,9 @@ export function ReceiptScanArea({
 
   const scanAsset = async (asset: ImagePicker.ImagePickerAsset) => {
     try {
-      const draft = await scanReceipt.mutateAsync({
-        uri: asset.uri,
-        name: asset.fileName ?? "receipt.jpg",
-        type: asset.mimeType ?? "image/jpeg",
-      });
+      // Expo's WinterCG fetch (the SDK 56 global) rejects RN's { uri } FormData
+      // descriptor; a File wraps the picked image as a Blob it can serialize.
+      const draft = await scanReceipt.mutateAsync(new File(asset.uri));
       onScanned(draft);
     } catch (err) {
       // A non-receipt image gets its own modal (the toast is suppressed for

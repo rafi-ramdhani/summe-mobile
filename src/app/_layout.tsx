@@ -16,11 +16,13 @@ import { useThemeStore } from "@/stores/themeStore";
 import { useLocaleStore } from "@/stores/localeStore";
 import { useIntroStore } from "@/stores/introStore";
 import GlobalToasts from "@/components/GlobalToasts";
+import { useScreenBackground } from "@/lib/theme";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  const screenBackground = useScreenBackground();
   const [fontsLoaded] = useFonts({
     SpaceGrotesk_400Regular, SpaceGrotesk_500Medium, SpaceGrotesk_700Bold,
     SpaceMono_400Regular, SpaceMono_700Bold,
@@ -47,10 +49,17 @@ export default function RootLayout() {
   }, [ready, fontsLoaded]);
   if (!ready || !fontsLoaded) return null;
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: screenBackground }}
+    >
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: screenBackground },
+            }}
+          />
           <GlobalToasts />
         </QueryClientProvider>
       </SafeAreaProvider>
