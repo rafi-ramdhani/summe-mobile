@@ -44,7 +44,7 @@ function SplitMockup({ en }: { en: boolean }) {
   // A group card (name + member count) over a single expense row with a payer
   // avatar and "split N ways" caption, mirroring the real group detail screen.
   return (
-    <View className="w-full max-w-xs">
+    <View className="w-full max-w-sm">
       <Card>
         <View className="flex-row items-center justify-between">
           <View>
@@ -89,7 +89,7 @@ function ItemizedMockup({ en }: { en: boolean }) {
   // The expense item list with the real rounded-full split-kind pill, one row
   // per split kind (equal / shares / percent / exact).
   return (
-    <View className="w-full max-w-xs">
+    <View className="w-full max-w-sm">
       <Card>
         <View className="mb-1 flex-row items-center justify-between">
           <Text variant="body-strong">Groceries</Text>
@@ -241,7 +241,7 @@ function ManagedMembersMockup({ en }: { en: boolean }) {
   const member = en ? "Member" : "Anggota";
   const managedLabel = en ? "Managed" : "Dikelola";
   return (
-    <View className="w-full max-w-xs">
+    <View className="w-full max-w-sm">
       <Card>
         <View className="mb-1 flex-row items-center justify-between">
           <Text variant="body-strong">{en ? "Members" : "Anggota"}</Text>
@@ -322,7 +322,7 @@ function BalancesMockup({ en }: { en: boolean }) {
   // The group Balances tab: each member with an avatar and a net amount, green
   // when they owe you and red when you owe them.
   return (
-    <View className="w-full max-w-xs">
+    <View className="w-full max-w-sm">
       <Card>
         <Text
           variant="caption"

@@ -15,3 +15,16 @@ test("403 → email not verified (id)", () => {
   expect(e.code).toBe("email_not_verified");
   expect(e.message).toContain("verifikasi");
 });
+test("400 → invalid/expired code (en)", () => {
+  const e = normalizeError(
+    new ApiError(400, "x", { message: "Invalid or expired code" }),
+    "en",
+  );
+  expect(e.code).toBe("invalid_code");
+  expect(e.message).toContain("Invalid or expired code");
+});
+test("400 → invalid/expired code (id)", () => {
+  const e = normalizeError(new ApiError(400, "x"), "id");
+  expect(e.code).toBe("invalid_code");
+  expect(e.message).toContain("kedaluwarsa");
+});

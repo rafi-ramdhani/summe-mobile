@@ -89,6 +89,21 @@ function normalizeApiError(error: ApiError, locale: Locale): AppError {
     };
   }
 
+  // 400 in the auth flows is a rejected verification/reset code (the client
+  // already validates format before submitting), so surface it clearly.
+  if (error.status === 400) {
+    return {
+      code: "invalid_code",
+      message:
+        locale === "en"
+          ? "Invalid or expired code. Please try again."
+          : "Kode tidak valid atau kedaluwarsa. Silakan coba lagi.",
+      source: "auth",
+      status: error.status,
+      cause: error,
+    };
+  }
+
   if (error.status === 401) {
     return {
       code: error.code ?? "auth_error",

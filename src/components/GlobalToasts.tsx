@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useToastStore, type ToastType } from "@/stores/toastStore";
 import { cn } from "@/lib/cn";
 import Text from "./Text";
@@ -17,11 +18,13 @@ const textClassByType: Record<ToastType, string> = {
 
 export default function GlobalToasts() {
   const toasts = useToastStore((s) => s.toasts);
+  const insets = useSafeAreaInsets();
 
   return (
     <View
       pointerEvents="box-none"
-      className="absolute top-0 left-0 right-0 items-center pt-2 px-4"
+      style={{ paddingTop: insets.top + 8 }}
+      className="absolute top-0 left-0 right-0 items-center px-4"
     >
       {toasts.map((toast) => (
         <View
