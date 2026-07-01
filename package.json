@@ -6,6 +6,7 @@
     "@expo-google-fonts/space-grotesk": "^0.4.1",
     "@expo-google-fonts/space-mono": "^0.4.2",
     "@expo/ui": "~56.0.18",
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@tanstack/react-form": "^1.33.0",
     "@tanstack/react-query": "^5.101.0",
@@ -13,6 +14,7 @@
     "@zxcvbn-ts/language-common": "^4.1.2",
     "clsx": "^2.1.1",
     "expo": "~56.0.12",
+    "expo-auth-session": "~56.0.14",
     "expo-constants": "~56.0.18",
     "expo-crypto": "~56.0.4",
     "expo-device": "~56.0.4",
@@ -31,10 +33,13 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
+    "react-native-copilot": "^3.3.3",
     "react-native-gesture-handler": "~2.31.1",
+    "react-native-pager-view": "8.0.1",
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
+    "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.8.3",
     "tailwind-merge": "^3.6.0",
@@ -43,7 +48,13 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.2.2",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
+    "jest": "^29.7.0",
+    "jest-expo": "^57.0.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -52,7 +63,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "jest"
   },
   "private": true
 }
