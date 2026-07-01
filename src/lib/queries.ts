@@ -278,6 +278,62 @@ export function useRevokeInvitation(groupId: string) {
   });
 }
 
+export function useUpdateGroup(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      data,
+      idempotencyKey,
+    }: {
+      data: {
+        name?: string;
+        currency?: string;
+        status?: "active" | "archived";
+      };
+      idempotencyKey: string;
+    }) =>
+      apiFetch<AppResponse<Group>>(`/groups/${groupId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+      qc.invalidateQueries({ queryKey: ["groups"] });
+    },
+  });
+}
+
+export function useDeleteGroup() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      groupId,
+      confirmationName,
+      idempotencyKey,
+    }: {
+      groupId: string;
+      confirmationName: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}`, {
+        method: "DELETE",
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confirmationName }),
+      }),
+    onSuccess: () => {
+      // Intentionally not removing ["groups", groupId] to prevent active
+      // observers (like the mounted settings screen) from instantly refetching.
+      qc.invalidateQueries({ queryKey: ["groups", "active"] });
+      qc.invalidateQueries({ queryKey: ["groups", "archived"] });
+    },
+  });
+}
+
 export function useInviteMember(groupId: string) {
   const qc = useQueryClient();
   return useMutation({

@@ -321,8 +321,12 @@ export default function GroupDetailScreen() {
                 accessibilityLabel={
                   locale === "en" ? "Settings" : "Pengaturan"
                 }
-                // TODO(next-pass): navigate to group settings once ported.
-                onPress={() => comingSoon(locale)}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(app)/groups/[groupId]/settings",
+                    params: { groupId },
+                  })
+                }
                 className="p-2 -mr-2"
               >
                 <Feather name="settings" size={20} color={fgMuted[scheme]} />
