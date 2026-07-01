@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, type Href } from "expo-router";
 import { useMe, useUpdateMe } from "@/lib/queries";
 import { consumePostAuthRedirect } from "@/lib/postAuthRedirect";
+import { storeSession } from "@/lib/auth";
 import { useLocale } from "@/lib/i18n";
 import Text from "@/components/Text";
 import Input from "@/components/Input";
@@ -44,7 +45,10 @@ export default function SetupProfileScreen() {
     updateMe.mutate(
       { name: name.trim() },
       {
-        onSuccess: goToDashboard,
+        onSuccess: async (res) => {
+          if (res?.data) await storeSession({ user: res.data });
+          await goToDashboard();
+        },
         onError: (err) => setErrorMsg((err as Error).message),
       },
     );

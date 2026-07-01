@@ -1,14 +1,23 @@
 const mockReplace = jest.fn();
 const mockMutate = jest.fn(
   (
-    _body: { name: string },
-    opts?: { onSuccess?: () => void; onError?: (err: Error) => void },
-  ) => opts?.onSuccess?.(),
+    body: { name: string },
+    opts?: {
+      onSuccess?: (res: {
+        data: { id: string; email: string; name: string };
+      }) => void;
+      onError?: (err: Error) => void;
+    },
+  ) =>
+    opts?.onSuccess?.({
+      data: { id: "1", email: "a@b.com", name: body.name },
+    }),
 );
 const mockUseMe = jest.fn(() => ({
   data: { data: { id: "1", email: "a@b.com", name: null as string | null } },
 }));
 const mockConsumePostAuthRedirect = jest.fn().mockResolvedValue(null);
+const mockStoreSession = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ replace: mockReplace }),
@@ -20,6 +29,7 @@ jest.mock("@/lib/queries", () => ({
 jest.mock("@/lib/postAuthRedirect", () => ({
   consumePostAuthRedirect: () => mockConsumePostAuthRedirect(),
 }));
+jest.mock("@/lib/auth", () => ({ storeSession: (...args: unknown[]) => mockStoreSession(...args) }));
 jest.mock("@react-native-async-storage/async-storage", () => ({
   getItem: jest.fn(() => Promise.resolve(null)),
   setItem: jest.fn(() => Promise.resolve()),
@@ -37,6 +47,7 @@ function renderScreen() {
 beforeEach(() => {
   mockReplace.mockClear();
   mockMutate.mockClear();
+  mockStoreSession.mockClear();
   mockUseMe.mockReturnValue({
     data: { data: { id: "1", email: "a@b.com", name: null } },
   });
@@ -65,6 +76,11 @@ test("entering a name and pressing Continue updates the profile and routes home"
         onError: expect.any(Function),
       }),
     ),
+  );
+  await waitFor(() =>
+    expect(mockStoreSession).toHaveBeenCalledWith({
+      user: { id: "1", email: "a@b.com", name: "Rafi" },
+    }),
   );
   await waitFor(() => expect(mockReplace).toHaveBeenCalledWith("/(app)"));
 });

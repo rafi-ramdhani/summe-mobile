@@ -11,6 +11,7 @@ jest.mock("@/lib/api", () => ({
   apiFetch: jest.fn(),
 }));
 jest.mock("@/lib/auth", () => ({ bootstrapAuth: jest.fn() }));
+jest.mock("@/lib/secureToken", () => ({ setToken: jest.fn() }));
 jest.mock("@/components/GoogleButton", () => ({
   __esModule: true,
   default: () => null,
@@ -23,6 +24,7 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 import { fireEvent, waitFor } from "@testing-library/react-native";
 import { apiFetch, ApiError } from "@/lib/api";
 import { bootstrapAuth } from "@/lib/auth";
+import { setToken } from "@/lib/secureToken";
 import { renderWithClient } from "@/lib/test-utils";
 import LoginScreen from "@/app/(auth)/login";
 
@@ -35,6 +37,7 @@ beforeEach(() => {
   mockUseLocalSearchParams.mockReturnValue({});
   (apiFetch as jest.Mock).mockReset();
   (bootstrapAuth as jest.Mock).mockReset();
+  (setToken as jest.Mock).mockReset();
 });
 
 test("submits credentials and bootstraps", async () => {
@@ -55,6 +58,19 @@ test("submits credentials and bootstraps", async () => {
       }),
     ),
   );
+  await waitFor(() => expect(bootstrapAuth).toHaveBeenCalled());
+});
+
+test("stores the session token returned by a successful login", async () => {
+  (apiFetch as jest.Mock).mockResolvedValue({ data: { token: "tok123" } });
+  (bootstrapAuth as jest.Mock).mockResolvedValue(undefined);
+  const { getByPlaceholderText, getByText } = await renderScreen();
+
+  await fireEvent.changeText(getByPlaceholderText("you@email.com"), "a@b.com");
+  await fireEvent.changeText(getByPlaceholderText("Your password"), "secret12");
+  await fireEvent.press(getByText("Log in"));
+
+  await waitFor(() => expect(setToken).toHaveBeenCalledWith("tok123"));
   await waitFor(() => expect(bootstrapAuth).toHaveBeenCalled());
 });
 

@@ -6,6 +6,7 @@ import { useAppError } from "@/lib/error";
 import { loginOptions, useAppForm } from "@/lib/form";
 import { apiFetch } from "@/lib/api";
 import { bootstrapAuth } from "@/lib/auth";
+import { setToken } from "@/lib/secureToken";
 import { useLocale } from "@/lib/i18n";
 import Text from "@/components/Text";
 import Button from "@/components/Button";
@@ -23,10 +24,14 @@ export default function LoginScreen() {
   const { mutateAsync } = useMutation({
     mutationFn: async (value: { email: string; password: string }) => {
       try {
-        await apiFetch("/auth/login", {
-          method: "POST",
-          body: JSON.stringify(value),
-        });
+        const res = await apiFetch<{ data?: { token?: string } }>(
+          "/auth/login",
+          {
+            method: "POST",
+            body: JSON.stringify(value),
+          },
+        );
+        if (res?.data?.token) await setToken(res.data.token);
         await bootstrapAuth();
       } catch (err: unknown) {
         const appError = normalizeError(err);
