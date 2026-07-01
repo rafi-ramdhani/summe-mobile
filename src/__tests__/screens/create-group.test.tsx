@@ -1,7 +1,8 @@
 const mockBack = jest.fn();
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ back: mockBack, push: mockPush, replace: jest.fn() }),
+  useRouter: () => ({ back: mockBack, push: mockPush, replace: mockReplace }),
 }));
 jest.mock("@/lib/api", () => ({
   ...jest.requireActual("@/lib/api"),
@@ -35,6 +36,7 @@ async function renderScreen() {
 beforeEach(() => {
   mockBack.mockReset();
   mockPush.mockReset();
+  mockReplace.mockReset();
   (apiFetch as jest.Mock).mockReset();
   (apiFetch as jest.Mock).mockImplementation((path: string) => {
     if (path === "/currencies") return Promise.resolve({ data: [] });
@@ -53,7 +55,7 @@ test("shows a required error when submitting an empty name", async () => {
   expect(apiFetch).not.toHaveBeenCalledWith("/groups", expect.anything());
 });
 
-test("creates the group and navigates back", async () => {
+test("creates the group and navigates to its detail screen", async () => {
   await renderScreen();
   await fireEvent.changeText(
     screen.getByPlaceholderText("e.g. Bali Trip"),
@@ -71,5 +73,10 @@ test("creates the group and navigates back", async () => {
       }),
     ),
   );
-  await waitFor(() => expect(mockBack).toHaveBeenCalled());
+  await waitFor(() =>
+    expect(mockReplace).toHaveBeenCalledWith({
+      pathname: "/(app)/groups/[groupId]",
+      params: { groupId: "g1" },
+    }),
+  );
 });

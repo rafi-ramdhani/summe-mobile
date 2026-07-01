@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Modal, Pressable, View } from "react-native";
 import Text from "@/components/Text";
 import Button from "@/components/Button";
@@ -9,19 +10,25 @@ export function ConfirmModal({
   confirmText,
   cancelText,
   confirmVariant = "primary",
+  confirmDisabled = false,
+  hideCancel = false,
   loading = false,
   onConfirm,
   onCancel,
+  children,
 }: {
   isOpen: boolean;
   title: string;
-  description?: string;
+  description?: string | ReactNode;
   confirmText: string;
   cancelText: string;
   confirmVariant?: "primary" | "negative";
+  confirmDisabled?: boolean;
+  hideCancel?: boolean;
   loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: ReactNode;
 }) {
   return (
     <Modal
@@ -42,23 +49,31 @@ export function ConfirmModal({
             {title}
           </Text>
           {description ? (
-            <Text variant="body" className="text-fg-muted mb-5">
-              {description}
-            </Text>
+            typeof description === "string" ? (
+              <Text variant="body" className="text-fg-muted mb-5">
+                {description}
+              </Text>
+            ) : (
+              <View className="mb-5">{description}</View>
+            )
           ) : (
             <View className="mb-5" />
           )}
+          {children ? <View className="mb-5">{children}</View> : null}
           <View className="flex-col gap-2">
             <Button
               variant={confirmVariant}
               loading={loading}
+              disabled={confirmDisabled}
               onPress={onConfirm}
             >
               {confirmText}
             </Button>
-            <Button variant="secondary" disabled={loading} onPress={onCancel}>
-              {cancelText}
-            </Button>
+            {!hideCancel && (
+              <Button variant="secondary" disabled={loading} onPress={onCancel}>
+                {cancelText}
+              </Button>
+            )}
           </View>
         </Pressable>
       </Pressable>

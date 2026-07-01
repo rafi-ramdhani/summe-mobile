@@ -1,8 +1,9 @@
 import { Pressable, View } from "react-native";
 import Text from "@/components/Text";
+import { ActionIndicator } from "@/components/ActionIndicator";
 import { cn } from "@/lib/cn";
 
-type Tab = { id: string; label: string };
+type Tab = { id: string; label: string; indicator?: number };
 
 export default function DashboardTabs({
   tabs,
@@ -30,15 +31,18 @@ export default function DashboardTabs({
               isActive ? "border-fg-default" : "border-border-subtle",
             )}
           >
-            <Text
-              variant={isActive ? "body-strong" : "body"}
-              className={cn(
-                "text-center",
-                isActive ? "text-fg-default" : "text-fg-muted",
-              )}
-            >
-              {tab.label}
-            </Text>
+            <View className="flex-row items-center justify-center gap-1.5">
+              <Text
+                variant={isActive ? "body-strong" : "body"}
+                className={cn(
+                  "text-center",
+                  isActive ? "text-fg-default" : "text-fg-muted",
+                )}
+              >
+                {tab.label}
+              </Text>
+              <ActionIndicator count={tab.indicator ?? 0} />
+            </View>
           </Pressable>
         );
       })}

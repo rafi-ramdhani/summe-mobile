@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "secondary" | "negative";
 type Props = {
-  variant?: Variant; loading?: boolean; children: React.ReactNode;
+  variant?: Variant; loading?: boolean; textClassName?: string; children: React.ReactNode;
 } & Omit<PressableProps, "children">;
 
 const box: Record<Variant, string> = {
@@ -23,7 +23,7 @@ const spinnerColor = {
   dark: { "fg-default": "#e4e4e7", "fg-inverse": "#0c0c0d" },
 } as const;
 
-export default function Button({ variant = "primary", loading = false, disabled, children, ...rest }: Props) {
+export default function Button({ variant = "primary", loading = false, textClassName, disabled, children, ...rest }: Props) {
   const blocked = disabled || loading;
   const { colorScheme } = useColorScheme();
   const spinnerToken = variant === "secondary" ? "fg-default" : "fg-inverse";
@@ -40,7 +40,7 @@ export default function Button({ variant = "primary", loading = false, disabled,
       {loading ? (
         <ActivityIndicator color={spinnerHex} />
       ) : (
-        <Text variant="body-strong" className={txt[variant]}>{children}</Text>
+        <Text variant="body-strong" className={cn(txt[variant], textClassName)}>{children}</Text>
       )}
     </Pressable>
   );

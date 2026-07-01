@@ -181,6 +181,281 @@ export function useUpdateOnboarding() {
   });
 }
 
+export type GroupMember = {
+  id: string;
+  role: "member" | "owner";
+  createdAt: string;
+  email: string | null;
+  name: string | null;
+  status?: "active" | "removed";
+  isManaged: boolean;
+};
+
+export type ExpenseSummary = {
+  id: string;
+  groupId: string;
+  name: string;
+  paidBy: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  isSettled: boolean;
+  discountAmount?: number;
+  taxAmount?: number;
+  serviceChargeAmount?: number;
+  tipAmount?: number;
+  totalAmount: number;
+  items: {
+    id: string;
+    expenseId: string;
+    name: string;
+    amount: number;
+    quantity: number;
+    splitKind: "equal" | "shares" | "percent" | "exact";
+    assignments: {
+      id: string;
+      expenseItemId: string;
+      assigneeId: string;
+      value: number;
+    }[];
+  }[];
+};
+
+export type Settlement = {
+  id: string;
+  groupId: string;
+  payerId: string;
+  payeeId: string;
+  amount: string;
+  status: "pending" | "confirmed" | "rejected";
+  rejectionReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GroupDetail = Group & {
+  members: GroupMember[];
+  expenses: ExpenseSummary[];
+  balances: { userId: string; amount: number }[];
+  debts: { from: string; to: string; amount: number }[];
+  settlements: Settlement[];
+  invitations?: { id: string; email: string; createdAt: string }[];
+  replacements?: {
+    id: string;
+    managedMemberId: string;
+    managedMemberName: string | null;
+    targetUserId: string;
+    requestedBy: string;
+  }[];
+};
+
+export function useGroupDetail(groupId: string) {
+  return useQuery({
+    queryKey: ["groups", groupId],
+    queryFn: () => apiFetch<AppResponse<GroupDetail>>(`/groups/${groupId}`),
+    enabled: !!groupId,
+  });
+}
+
+export function useRevokeInvitation(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      invitationId,
+      idempotencyKey,
+    }: {
+      invitationId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/invitations/${invitationId}`, {
+        method: "DELETE",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useRemoveMember(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      memberId,
+      idempotencyKey,
+    }: {
+      memberId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/members/${memberId}`, {
+        method: "DELETE",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useLeaveGroup(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ idempotencyKey }: { idempotencyKey: string }) =>
+      apiFetch(`/groups/${groupId}/leave`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      // The group leaves the user's list. Do not refetch ["groups", groupId]
+      // (the user no longer has access).
+      qc.invalidateQueries({ queryKey: ["groups", "active"] });
+      qc.invalidateQueries({ queryKey: ["groups", "archived"] });
+    },
+  });
+}
+
+export function useCreateManagedMember(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      name,
+      idempotencyKey,
+    }: {
+      name: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/managed-members`, {
+        method: "POST",
+        body: JSON.stringify({ name }),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useRemoveManagedMember(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      memberId,
+      idempotencyKey,
+    }: {
+      memberId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/managed-members/${memberId}`, {
+        method: "DELETE",
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useUpdateManagedMember(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      memberId,
+      name,
+      idempotencyKey,
+    }: {
+      memberId: string;
+      name: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/managed-members/${memberId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ name }),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useCreateReplacement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      memberId,
+      targetUserId,
+      idempotencyKey,
+    }: {
+      memberId: string;
+      targetUserId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(`/groups/${groupId}/managed-members/${memberId}/replace`, {
+        method: "POST",
+        body: JSON.stringify({ targetUserId }),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+    },
+  });
+}
+
+export function useRespondReplacement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      replacementId,
+      action,
+      idempotencyKey,
+    }: {
+      replacementId: string;
+      action: "confirm" | "decline";
+      idempotencyKey: string;
+    }) =>
+      apiFetch(
+        `/groups/${groupId}/managed-members/replacements/${replacementId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ action }),
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+      qc.invalidateQueries({ queryKey: ["groups", groupId, "activities"] });
+    },
+  });
+}
+
+export function useCancelReplacement(groupId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      replacementId,
+      idempotencyKey,
+    }: {
+      replacementId: string;
+      idempotencyKey: string;
+    }) =>
+      apiFetch(
+        `/groups/${groupId}/managed-members/replacements/${replacementId}`,
+        {
+          method: "DELETE",
+          headers: { "Idempotency-Key": idempotencyKey },
+        },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["groups", groupId] });
+    },
+  });
+}
+
 export function useCurrencies() {
   return useQuery({
     queryKey: ["currencies"],

@@ -53,10 +53,14 @@ export default function CreateGroupScreen() {
     createGroup.mutate(
       { data: { name: name.trim(), currency }, idempotencyKey },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
           setIdempotencyKey(generateUUID());
-          // TODO(next-pass): navigate to the group detail screen once it exists.
-          router.back();
+          // Replace (not push) so back from the new group goes to the
+          // dashboard instead of the stale create form.
+          router.replace({
+            pathname: "/(app)/groups/[groupId]",
+            params: { groupId: res.data.id },
+          });
         },
       },
     );
