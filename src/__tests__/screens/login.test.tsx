@@ -20,21 +20,14 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: jest.fn(() => Promise.resolve()),
 }));
 
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, waitFor } from "@testing-library/react-native";
 import { apiFetch, ApiError } from "@/lib/api";
 import { bootstrapAuth } from "@/lib/auth";
+import { renderWithClient } from "@/lib/test-utils";
 import LoginScreen from "@/app/(auth)/login";
 
 function renderScreen() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <LoginScreen />
-    </QueryClientProvider>,
-  );
+  return renderWithClient(<LoginScreen />);
 }
 
 beforeEach(() => {
